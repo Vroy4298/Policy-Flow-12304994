@@ -1,0 +1,113 @@
+{
+  "info": {
+    "name": "PolicyFlow API",
+    "description": "PolicyFlow — Travel Insurance Issuance & Reconciliation Engine\nAll endpoints require Content-Type: application/json",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create Policy Request (SUCCESS - 201)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Accept", "value": "application/json"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/policy-requests", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "policy-requests"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"client_request_id\": \"AGT-2026-0001\",\n  \"agent_id\": \"AGENT-17\",\n  \"customer_name\": \"Sample Customer\",\n  \"date_of_birth\": \"1998-04-10\",\n  \"destination\": \"INTERNATIONAL\",\n  \"trip_start\": \"2026-11-10\",\n  \"trip_end\": \"2026-11-14\",\n  \"plan_code\": \"PLUS\",\n  \"sum_insured\": 300000\n}"
+        }
+      }
+    },
+    {
+      "name": "2. Repeat Same Request (Idempotent - 200)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Accept", "value": "application/json"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/policy-requests", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "policy-requests"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"client_request_id\": \"AGT-2026-0001\",\n  \"agent_id\": \"AGENT-17\",\n  \"customer_name\": \"Sample Customer\",\n  \"date_of_birth\": \"1998-04-10\",\n  \"destination\": \"INTERNATIONAL\",\n  \"trip_start\": \"2026-11-10\",\n  \"trip_end\": \"2026-11-14\",\n  \"plan_code\": \"PLUS\",\n  \"sum_insured\": 300000\n}"
+        }
+      }
+    },
+    {
+      "name": "3. Get Policy Request",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Accept", "value": "application/json"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/policy-requests/1", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "policy-requests", "1"]}
+      }
+    },
+    {
+      "name": "4. List Policy Requests",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Accept", "value": "application/json"}],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/policy-requests?status=VALIDATED&per_page=10",
+          "host": ["127.0.0.1"], "port": "8000", "path": ["api", "policy-requests"],
+          "query": [{"key": "status", "value": "VALIDATED"}, {"key": "per_page", "value": "10"}]
+        }
+      }
+    },
+    {
+      "name": "5. Submit (SUCCESS)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Accept", "value": "application/json"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/policy-requests/1/submit", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "policy-requests", "1", "submit"]},
+        "body": {"mode": "raw", "raw": "{\n  \"scenario\": \"SUCCESS\"\n}"}
+      }
+    },
+    {
+      "name": "5b. Submit (TIMEOUT_AFTER_ISSUE)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Accept", "value": "application/json"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/policy-requests/1/submit", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "policy-requests", "1", "submit"]},
+        "body": {"mode": "raw", "raw": "{\n  \"scenario\": \"TIMEOUT_AFTER_ISSUE\"\n}"}
+      }
+    },
+    {
+      "name": "5c. Submit (TEMPORARY_FAILURE)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Accept", "value": "application/json"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/policy-requests/1/submit", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "policy-requests", "1", "submit"]},
+        "body": {"mode": "raw", "raw": "{\n  \"scenario\": \"TEMPORARY_FAILURE\"\n}"}
+      }
+    },
+    {
+      "name": "5d. Submit (DELAYED_CALLBACK)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Accept", "value": "application/json"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/policy-requests/1/submit", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "policy-requests", "1", "submit"]},
+        "body": {"mode": "raw", "raw": "{\n  \"scenario\": \"DELAYED_CALLBACK\"\n}"}
+      }
+    },
+    {
+      "name": "6. Mock Insurer Callback",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Accept", "value": "application/json"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/mock-insurer/callback", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "mock-insurer", "callback"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"event_id\": \"EVT-20261110-UNIQUE001\",\n  \"event_type\": \"ISSUED\",\n  \"provider_reference\": \"PR-1-XXXXXXXX\",\n  \"policy_number\": \"POL-20261110-TESTABCD\"\n}"
+        }
+      }
+    },
+    {
+      "name": "7. Validation Error - Bad Plan",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Accept", "value": "application/json"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/policy-requests", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "policy-requests"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"client_request_id\": \"AGT-BAD-001\",\n  \"agent_id\": \"AGENT-17\",\n  \"customer_name\": \"Test\",\n  \"date_of_birth\": \"1990-01-01\",\n  \"destination\": \"DOMESTIC\",\n  \"trip_start\": \"2026-11-10\",\n  \"trip_end\": \"2026-11-12\",\n  \"plan_code\": \"GOLD\",\n  \"sum_insured\": 100000\n}"
+        }
+      }
+    }
+  ]
+}
